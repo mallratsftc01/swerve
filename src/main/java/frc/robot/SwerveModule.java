@@ -100,8 +100,25 @@ public class SwerveModule {
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
         // load the encoder offset
-    encoderOffset = Preferences.getDouble("encoder" + moduleNumber, encoderOffset);
- 
+//    encoderOffset = Preferences.getDouble("encoder" + moduleNumber, encoderOffset);
+// hard coding the offset because its better?
+switch (moduleNumber) {
+  case 0: 
+  encoderOffset = 0.034; //6.248;
+  break;
+  case 1: 
+  encoderOffset = 2.17; //4.101;
+  break;
+  case 2: 
+  encoderOffset = 3.31; //2.967;
+  break;
+  case 3: 
+  encoderOffset = 0.5; //5.724;
+  break;
+}
+
+  
+ SmartDashboard.putNumber("offset" + moduleNumber, encoderOffset);
     /* set the target state to the current state */
     SwerveModuleState tmpState = new SwerveModuleState (0, getPosition().angle);
 //    setDesiredState(tmpState);
@@ -109,9 +126,15 @@ public class SwerveModule {
   private double encoderValue () {
     var retVal =  m_turningEncoder.getVoltage() / RobotController.getVoltage5V(); // convert voltage to %
     retVal = 2.0 * Math.PI * retVal;    // get % of circle encoder is reading
+SmartDashboard.putNumber("raw encoder deg " + moduleNumber, Math.round(retVal * (180/Math.PI)));
+
     retVal = (retVal + encoderOffset) % (2.0 * Math.PI);    // apply offset for this encoder and map it back onto [0, 2pi]
       // might need this so we're in the same range as the pid controller is expecting.
-    retVal = retVal - Math.PI; 
+//    retVal = retVal - Math.PI;
+
+SmartDashboard.putNumber("encoder " + moduleNumber, Math.round(100 *retVal)/100.0);
+SmartDashboard.putNumber("encoder " + moduleNumber + " deg", Math.round(retVal *(180/Math.PI)));
+
     return (retVal);
 }
 
@@ -121,8 +144,12 @@ public class SwerveModule {
         // get the turning encoder and write it to preferences
     encoderOffset = m_turningEncoder.getVoltage() / RobotController.getVoltage5V(); // convert voltage to %
     encoderOffset = 2.0 * Math.PI * encoderOffset;    // get % of circle encoder is reading
-    encoderOffset = (2.0 * Math.PI) - encoderOffset;  
-    Preferences.initDouble("encoder" + moduleNumber, encoderOffset);
+    SmartDashboard.putNumber("raw offset" + moduleNumber, encoderOffset);
+    SmartDashboard.putNumber("raw offset Deg " + moduleNumber, Math.round(encoderOffset * (180/Math.PI)));
+    encoderOffset = (2.0 * Math.PI) - encoderOffset;
+//    Preferences.initDouble("encoder" + moduleNumber, encoderOffset);
+    Preferences.setDouble("encoder" + moduleNumber, encoderOffset * (180/Math.PI));
+    SmartDashboard.putNumber("new offset" + moduleNumber, Math.round(encoderOffset * (180/Math.PI)));
   }
   /**
    * Returns the current state of the module.
@@ -173,6 +200,7 @@ public class SwerveModule {
 
     final double turnFeedforward =
         m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
+SmartDashboard.putNumber("target " + moduleNumber, state.angle.getDegrees());
 
     m_driveMotor.setVoltage(driveOutput + driveFeedforward);
     m_turningMotor.setVoltage(turnOutput + turnFeedforward);

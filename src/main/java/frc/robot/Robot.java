@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
     final var rot = /* FWF - removed a * -1 here to try to fix the park/rotate problem */
-        m_rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getRightX(), 0.1))
+        m_rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getRightX() * 0.25, 0.1))
             * Drivetrain.kMaxAngularSpeed;
 
     m_swerve.drive(xSpeed, ySpeed, rot, true);
