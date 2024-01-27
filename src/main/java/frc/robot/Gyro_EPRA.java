@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /*
  *
@@ -27,6 +28,7 @@ public class Gyro_EPRA implements Gyro{
         return m_gyro.getRate();
     }
     public Rotation2d getRotation2d()	{// Return the heading of the robot as a Rotation2d.
+SmartDashboard.setDefaultNumber("Gyro", m_gyro.getAngle());
         return new Rotation2d(Math.toRadians(m_gyro.getAngle()));
     }
     public void reset()	{// Reset the gyro.

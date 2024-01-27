@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain {
@@ -28,17 +30,18 @@ public class Drivetrain {
         private final Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
         private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
 */
-private final Translation2d m_frontLeftLocation = new Translation2d(0.381, 0.381);
-private final Translation2d m_frontRightLocation = new Translation2d(0.381, -0.381);
-private final Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
-private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
+private final Translation2d m_frontLeftLocation = new Translation2d(0.4445, 0.4445);
+private final Translation2d m_frontRightLocation = new Translation2d(0.4445, -0.4445);
+private final Translation2d m_backLeftLocation = new Translation2d(-0.4445, 0.4445);
+private final Translation2d m_backRightLocation = new Translation2d(-0.4445, -0.4445);
 
   private final SwerveModule m_frontLeft = new SwerveModule(3, 4, 1);
   private final SwerveModule m_frontRight = new SwerveModule(1, 2, 0);
   private final SwerveModule m_backLeft = new SwerveModule(5, 6, 2);
   private final SwerveModule m_backRight = new SwerveModule(7, 8, 3);
 
-  private final Gyro_EPRA m_gyro = new Gyro_EPRA();
+//  private final Gyro_EPRA m_gyro = new Gyro_EPRA();
+private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
   private final SwerveDriveKinematics m_kinematics =
       new SwerveDriveKinematics(
@@ -57,27 +60,19 @@ private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.3
 
   public Drivetrain() {
     m_gyro.reset();
-
-    /* try setting the desired state to what the encoders say on startup * /
-This is probably better in the swerveModule so I'm going to put it in there
-    SwerveModuleState tmpState = new SwerveModuleState (0, m_frontLeft.getPosition().angle);
-    m_frontLeft.setDesiredState(tmpState);
-    tmpState = new SwerveModuleState (0, m_frontRight.getPosition().angle);
-    m_frontRight.setDesiredState(tmpState);
-    tmpState = new SwerveModuleState (0, m_backLeft.getPosition().angle);
-    m_backLeft.setDesiredState(tmpState);
-    tmpState = new SwerveModuleState (0, m_backRight.getPosition().angle);
-    m_backRight.setDesiredState(tmpState);
-    */
   }
 
   public void ResetDrives () {
+
+    /* 
     m_frontLeft.resetEncoder();
     m_frontRight.resetEncoder();
     m_backLeft.resetEncoder();
     m_backRight.resetEncoder();
+    */
+    m_gyro.reset();
 
-    SmartDashboard.putString("Drive have been reset", java.time.LocalTime.now().toString());
+    SmartDashboard.putString("Gyro has been reset", java.time.LocalTime.now().toString());
   }
   /**
    * Method to drive the robot using joystick info.
@@ -98,6 +93,10 @@ This is probably better in the swerveModule so I'm going to put it in there
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
+
+SmartDashboard.putString("gyro", m_gyro.getRotation2d().toString());
+//SmartDashboard.putString("kine", m_kinematics.)
+
 
     SmartDashboard.putString("module 0", swerveModuleStates[0].toString());
     SmartDashboard.putString("module 1", swerveModuleStates[1].toString());

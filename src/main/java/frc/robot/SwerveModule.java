@@ -118,7 +118,6 @@ switch (moduleNumber) {
 }
 
   
- SmartDashboard.putNumber("offset" + moduleNumber, encoderOffset);
     /* set the target state to the current state */
     SwerveModuleState tmpState = new SwerveModuleState (0, getPosition().angle);
 //    setDesiredState(tmpState);
@@ -126,14 +125,10 @@ switch (moduleNumber) {
   private double encoderValue () {
     var retVal =  m_turningEncoder.getVoltage() / RobotController.getVoltage5V(); // convert voltage to %
     retVal = 2.0 * Math.PI * retVal;    // get % of circle encoder is reading
-SmartDashboard.putNumber("raw encoder deg " + moduleNumber, Math.round(retVal * (180/Math.PI)));
 
     retVal = (retVal + encoderOffset) % (2.0 * Math.PI);    // apply offset for this encoder and map it back onto [0, 2pi]
       // might need this so we're in the same range as the pid controller is expecting.
 //    retVal = retVal - Math.PI;
-
-SmartDashboard.putNumber("encoder " + moduleNumber, Math.round(100 *retVal)/100.0);
-SmartDashboard.putNumber("encoder " + moduleNumber + " deg", Math.round(retVal *(180/Math.PI)));
 
     return (retVal);
 }
@@ -144,12 +139,9 @@ SmartDashboard.putNumber("encoder " + moduleNumber + " deg", Math.round(retVal *
         // get the turning encoder and write it to preferences
     encoderOffset = m_turningEncoder.getVoltage() / RobotController.getVoltage5V(); // convert voltage to %
     encoderOffset = 2.0 * Math.PI * encoderOffset;    // get % of circle encoder is reading
-    SmartDashboard.putNumber("raw offset" + moduleNumber, encoderOffset);
-    SmartDashboard.putNumber("raw offset Deg " + moduleNumber, Math.round(encoderOffset * (180/Math.PI)));
     encoderOffset = (2.0 * Math.PI) - encoderOffset;
 //    Preferences.initDouble("encoder" + moduleNumber, encoderOffset);
-    Preferences.setDouble("encoder" + moduleNumber, encoderOffset * (180/Math.PI));
-    SmartDashboard.putNumber("new offset" + moduleNumber, Math.round(encoderOffset * (180/Math.PI)));
+    Preferences.setDouble("encoder" + moduleNumber, encoderOffset);
   }
   /**
    * Returns the current state of the module.
@@ -200,7 +192,6 @@ SmartDashboard.putNumber("encoder " + moduleNumber + " deg", Math.round(retVal *
 
     final double turnFeedforward =
         m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
-SmartDashboard.putNumber("target " + moduleNumber, state.angle.getDegrees());
 
     m_driveMotor.setVoltage(driveOutput + driveFeedforward);
     m_turningMotor.setVoltage(turnOutput + turnFeedforward);
